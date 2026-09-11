@@ -1,0 +1,27 @@
+{
+    "name": "ant-theme-demo",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc --noEmit && vite build",
+        "preview": "vite preview",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@ant-design/fast-color": "3.0.1",
+        "@ant-design/icons": "6.2.5",
+        "antd": "6.4.3",
+        "antd-style": "4.1.0",
+        "react": "19.2.6",
+        "react-dom": "19.2.6"
+    },
+    "devDependencies": {
+        "@types/react": "^19.2.0",
+        "@types/react-dom": "^19.2.0",
+        "@vitejs/plugin-react": "5.2.0",
+        "typescript": "6.0.3",
+        "vite": "8.0.16"
+    }
+}
