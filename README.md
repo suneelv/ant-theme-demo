@@ -15,6 +15,15 @@ npm run build    # type-check + production build into dist/
 npm run preview  # serve dist/ on port 9000
 ```
 
+## Deploying
+
+Every push to `main` builds and publishes the site to GitHub Pages via
+[.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml), at
+https://suneelv.github.io/ant-theme-demo/. The workflow builds with `--base=/<repo>/` because Pages serves a
+project site from a sub-path; local and other hosts keep the root base.
+
+One-time setup: in the repo's **Settings → Pages**, set **Source** to **GitHub Actions**.
+
 ## Theme controls
 
 The sticky toolbar at the top of the page drives the whole theme:
