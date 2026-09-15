@@ -97,16 +97,17 @@ export const unpinnedInputNumber = (token: GlobalToken): ThemeConfig['components
     },
 });
 
-export const unpinnedDatePicker = (token: GlobalToken): ThemeConfig['components'] => {
+/* DatePicker and Select share the formula. Select's tokens also size the tags in TreeSelect and
+   Cascader, which render their input through Select's styles. */
+export const unpinnedMultipleItemHeight = (token: GlobalToken): ThemeConfig['components'] => {
     const inset = Math.max(token.paddingXXS, token.lineWidth) * HALF;
-
-    return {
-        DatePicker: {
-            multipleItemHeight: token.controlHeight - inset,
-            multipleItemHeightSM: token.controlHeightSM - inset,
-            multipleItemHeightLG: token.controlHeightLG - inset,
-        },
+    const heights = {
+        multipleItemHeight: token.controlHeight - inset,
+        multipleItemHeightSM: token.controlHeightSM - inset,
+        multipleItemHeightLG: token.controlHeightLG - inset,
     };
+
+    return { DatePicker: heights, Select: heights };
 };
 
 export const unpinnedSteps =(token: GlobalToken): ThemeConfig['components'] => ({
