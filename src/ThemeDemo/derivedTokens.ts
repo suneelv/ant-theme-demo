@@ -97,7 +97,19 @@ export const unpinnedInputNumber = (token: GlobalToken): ThemeConfig['components
     },
 });
 
-export const unpinnedSteps = (token: GlobalToken): ThemeConfig['components'] => ({
+export const unpinnedDatePicker = (token: GlobalToken): ThemeConfig['components'] => {
+    const inset = Math.max(token.paddingXXS, token.lineWidth) * HALF;
+
+    return {
+        DatePicker: {
+            multipleItemHeight: token.controlHeight - inset,
+            multipleItemHeightSM: token.controlHeightSM - inset,
+            multipleItemHeightLG: token.controlHeightLG - inset,
+        },
+    };
+};
+
+export const unpinnedSteps =(token: GlobalToken): ThemeConfig['components'] => ({
     Steps: {
         dotSize: token.controlHeight / QUARTER,
         dotCurrentSize: token.controlHeightLG / QUARTER,
