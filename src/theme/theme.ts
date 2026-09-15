@@ -353,6 +353,9 @@ const pickerMetrics = {
     textHeight: 40,
     timeColumnWidth: 56,
     withoutTimeCellHeight: 66,
+    // multipleItemHeight: 24,
+    // multipleItemHeightLG: 32,
+    // multipleItemHeightSM: 16,
 };
 
 /* Every component override that does not depend on the tenant colours or the colour mode.

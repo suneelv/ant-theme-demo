@@ -19,6 +19,7 @@ import {
     theme,
 } from 'antd';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import { Section } from '../primitives';
 import { Specimen } from '../Specimen';
 import { Compare, CompareTrio } from '../Compare';
@@ -59,6 +60,10 @@ const TRANSFER_DATA = Array.from({ length: TRANSFER_COUNT }, (_, index) => ({
 
 const TRANSFER_TARGET = ['1', '3'];
 
+// Fixed dates rather than today(), so the specimen renders identically on every visit.
+const DATE_PAIR = [dayjs('2026-01-12'), dayjs('2026-01-19')];
+const DATE_TRIO = [...DATE_PAIR, dayjs('2026-01-26')];
+
 const ValidationForm = () => (
     <Form layout="vertical">
         <Form.Item label="Default">
@@ -98,6 +103,14 @@ const Controls = () => {
                 />
                 <DatePicker />
                 <DatePicker.RangePicker />
+                {/* Multiple mode renders picked dates as tags, so the tag height sits alongside the
+                    multi-select's tags above. Two dates fit on one row; three wrap to a second. */}
+                <DatePicker multiple defaultValue={DATE_PAIR} style={{ width: WIDE_FIELD_WIDTH }} />
+                <DatePicker multiple defaultValue={DATE_TRIO} style={{ width: WIDE_FIELD_WIDTH }} />
+                <DatePicker size="small" multiple defaultValue={DATE_PAIR} style={{ width: WIDE_FIELD_WIDTH }} />
+                <DatePicker size="small" multiple defaultValue={DATE_TRIO} style={{ width: WIDE_FIELD_WIDTH }} />
+                <DatePicker size="large" multiple defaultValue={DATE_PAIR} style={{ width: WIDE_FIELD_WIDTH }} />
+                <DatePicker size="large" multiple defaultValue={DATE_TRIO} style={{ width: WIDE_FIELD_WIDTH }} />
             </Flex>
             <Input.TextArea rows={TEXTAREA_ROWS} placeholder="Textarea" style={{ marginTop: token.margin }} />
         </>
