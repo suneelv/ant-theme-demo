@@ -110,119 +110,144 @@ const FIXED_ITEM_HEIGHT: ThemeConfig['components'] = {
     Select: FIXED_HEIGHTS,
 };
 
-interface TagProbeProps {
+interface ControlSpec {
     name: string;
+    /* Which token set sizes this control's tags — the point of pairing DatePicker against the
+       four controls that read Select's. */
+    token: string;
+    selector: string;
+    render: (size: ControlSize) => ReactNode;
+}
+
+const style = { width: FIELD_WIDTH };
+
+const CONTROLS: ControlSpec[] = [
+    {
+        name: 'DatePicker',
+        token: 'DatePicker.multipleItemHeight',
+        selector: PICKER_TAG,
+        render: (size) => <DatePicker size={size} multiple defaultValue={DATES} style={style} />,
+    },
+    {
+        name: 'Select — multiple',
+        token: 'Select.multipleItemHeight',
+        selector: SELECT_TAG,
+        render: (size) => (
+            <Select size={size} mode="multiple" defaultValue={SELECTED_WINGS} options={SELECT_OPTIONS} style={style} />
+        ),
+    },
+    {
+        name: 'Select — tags',
+        token: 'Select.multipleItemHeight',
+        selector: SELECT_TAG,
+        render: (size) => (
+            <Select size={size} mode="tags" defaultValue={SELECTED_WINGS} options={SELECT_OPTIONS} style={style} />
+        ),
+    },
+    {
+        name: 'TreeSelect',
+        token: 'Select.multipleItemHeight',
+        selector: SELECT_TAG,
+        render: (size) => (
+            <TreeSelect
+                size={size}
+                treeCheckable
+                defaultValue={SELECTED_TREE}
+                treeData={TREE_DATA}
+                treeDefaultExpandAll
+                style={style}
+            />
+        ),
+    },
+    {
+        name: 'Cascader',
+        token: 'Select.multipleItemHeight',
+        selector: SELECT_TAG,
+        render: (size) => (
+            <Cascader
+                size={size}
+                multiple
+                /* The default collapses a fully selected branch into one parent tag. */
+                showCheckedStrategy={Cascader.SHOW_CHILD}
+                defaultValue={SELECTED_CITIES}
+                options={CASCADER_OPTIONS}
+                style={style}
+            />
+        ),
+    },
+];
+
+interface VariantColumnProps {
+    label: string;
+    caption: string;
     selector: string;
     children: ReactNode;
 }
 
 /* The tag height is measured, not restated: component tokens never reach useToken(), so the
-   rendered tag is the only honest readout of what each card resolved to. */
-const TagProbe = ({ name, selector, children }: TagProbeProps) => {
+   rendered tag is the only honest readout of what each column resolved to. */
+const VariantColumn = ({ label, caption, selector, children }: VariantColumnProps) => {
     const { styles } = useDemoStyles();
+    const { token } = theme.useToken();
     const { measure, size } = useMeasuredSize(selector);
 
     return (
-        <Flex vertical gap={4}>
-            <Text type="secondary" className={styles.mono}>
-                {name} · tag {size ? `${size.height}px` : '…'}
-            </Text>
-            <div ref={measure}>{children}</div>
-        </Flex>
-    );
-};
-
-interface ControlRowProps {
-    size: ControlSize;
-    label: string;
-}
-
-const ControlRow = ({ size, label }: ControlRowProps) => {
-    const style = { width: FIELD_WIDTH };
-
-    return (
-        <Flex vertical gap={8}>
+        <div className={styles.compareColumn}>
             <Text strong>{label}</Text>
-            <Flex gap={16} wrap align="flex-start">
-                <TagProbe name="DatePicker" selector={PICKER_TAG}>
-                    <DatePicker size={size} multiple defaultValue={DATES} style={style} />
-                </TagProbe>
-                <TagProbe name="Select multiple" selector={SELECT_TAG}>
-                    <Select
-                        size={size}
-                        mode="multiple"
-                        defaultValue={SELECTED_WINGS}
-                        options={SELECT_OPTIONS}
-                        style={style}
-                    />
-                </TagProbe>
-                <TagProbe name="Select tags" selector={SELECT_TAG}>
-                    <Select size={size} mode="tags" defaultValue={SELECTED_WINGS} options={SELECT_OPTIONS} style={style} />
-                </TagProbe>
-                <TagProbe name="TreeSelect" selector={SELECT_TAG}>
-                    <TreeSelect
-                        size={size}
-                        treeCheckable
-                        defaultValue={SELECTED_TREE}
-                        treeData={TREE_DATA}
-                        treeDefaultExpandAll
-                        style={style}
-                    />
-                </TagProbe>
-                <TagProbe name="Cascader" selector={SELECT_TAG}>
-                    <Cascader
-                        size={size}
-                        multiple
-                        /* The default collapses a fully selected branch into one parent tag. */
-                        showCheckedStrategy={Cascader.SHOW_CHILD}
-                        defaultValue={SELECTED_CITIES}
-                        options={CASCADER_OPTIONS}
-                        style={style}
-                    />
-                </TagProbe>
-            </Flex>
-        </Flex>
+            <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                {caption}
+            </Text>
+            <Text className={styles.mono}>tag {size ? `${size.height}px` : '…'}</Text>
+            <div ref={measure}>{children}</div>
+        </div>
     );
 };
 
-const ControlSizes = () => (
-    <Flex vertical gap={24}>
-        {SIZES.map(({ size, label }) => (
-            <ControlRow key={size} size={size} label={label} />
-        ))}
-    </Flex>
-);
-
-interface ExperimentCardProps {
-    title: string;
-    caption: string;
-    /* Borders the card in the primary colour of the theme it renders under. */
-    highlighted?: boolean;
-    children: ReactNode;
-}
-
-const ExperimentCard = ({ title, caption, highlighted, children }: ExperimentCardProps) => {
-    const { token } = theme.useToken();
-
-    return (
-        <Card
-            size="small"
-            title={title}
-            variant="outlined"
-            style={highlighted ? { borderColor: token.colorPrimary } : undefined}
-        >
-            <Paragraph type="secondary">{caption}</Paragraph>
-            {children}
-        </Card>
-    );
-};
-
-/* The formula is evaluated against the app's control scale, so the card follows controlHeight
+/* The formula is evaluated against the app's control scale, so the column follows controlHeight
    rather than whatever theme.ts currently pins. */
 const AutoItemHeight = ({ children }: { children: ReactNode }) => {
     const { token } = theme.useToken();
 
     return <ConfigProvider theme={{ components: unpinnedMultipleItemHeight(token) }}>{children}</ConfigProvider>;
+};
+
+interface ComparisonRowProps {
+    control: ControlSpec;
+    size: ControlSize;
+    sizeLabel: string;
+}
+
+/* One control at one size, three ways: stock Ant Design, Ant Design's own formula on our raised
+   control scale, and the design export's pinned numbers. Read across. */
+const ComparisonRow = ({ control, size, sizeLabel }: ComparisonRowProps) => {
+    const { styles } = useDemoStyles();
+    const { token } = theme.useToken();
+
+    return (
+        <Card size="small" title={`${control.name} · ${sizeLabel}`} variant="outlined">
+            <div className={styles.compareTrio}>
+                <Stock>
+                    <VariantColumn label="Ant default" caption="stock scale, stock formula" selector={control.selector}>
+                        {control.render(size)}
+                    </VariantColumn>
+                </Stock>
+                <AutoItemHeight>
+                    <VariantColumn
+                        label="Auto"
+                        caption={`controlHeight − ${token.paddingXXS * 2}, our scale`}
+                        selector={control.selector}
+                    >
+                        {control.render(size)}
+                    </VariantColumn>
+                </AutoItemHeight>
+                <ConfigProvider theme={{ components: FIXED_ITEM_HEIGHT }}>
+                    <VariantColumn label="Theme fix" caption="pinned 16 / 24 / 32" selector={control.selector}>
+                        {control.render(size)}
+                    </VariantColumn>
+                </ConfigProvider>
+            </div>
+        </Card>
+    );
 };
 
 export const Experiments = () => {
@@ -248,34 +273,23 @@ export const Experiments = () => {
 
                 <Title level={3}>Multi-select tag height</Title>
                 <Paragraph type="secondary">
-                    Every Ant Design control that renders selections as tags, at small, default and large, under
-                    three settings for multipleItemHeight. DatePicker reads its own token; Select, TreeSelect and
-                    Cascader all read Select's. Each control reads out its rendered tag height.
+                    Every Ant Design control that renders selections as tags, one card per control per size, with
+                    stock Ant Design, the auto formula and the pinned theme fix side by side. DatePicker reads its
+                    own token; Select, TreeSelect and Cascader all read Select's. Each column reads out its
+                    rendered tag height.
                 </Paragraph>
 
                 <Flex vertical gap={token.margin}>
-                    <Stock>
-                        <ExperimentCard
-                            title="Stock Ant Design"
-                            caption="controlHeight 24 / 32 / 40 → tags 16 / 24 / 32"
-                            highlighted
-                        >
-                            <ControlSizes />
-                        </ExperimentCard>
-                    </Stock>
-                    <AutoItemHeight>
-                        <ExperimentCard
-                            title="multipleItemHeight — auto"
-                            caption={`Ant Design's formula, controlHeight − ${token.paddingXXS * 2}, on our 32 / 40 / 48 scale`}
-                        >
-                            <ControlSizes />
-                        </ExperimentCard>
-                    </AutoItemHeight>
-                    <ConfigProvider theme={{ components: FIXED_ITEM_HEIGHT }}>
-                        <ExperimentCard title="multipleItemHeight — fixed" caption="16 / 24 / 32, pinned">
-                            <ControlSizes />
-                        </ExperimentCard>
-                    </ConfigProvider>
+                    {CONTROLS.map((control) => (
+                        <Flex key={control.name} vertical gap={token.marginXS}>
+                            <Text type="secondary" className={styles.mono}>
+                                {control.token}
+                            </Text>
+                            {SIZES.map(({ size, label }) => (
+                                <ComparisonRow key={size} control={control} size={size} sizeLabel={label} />
+                            ))}
+                        </Flex>
+                    ))}
                 </Flex>
             </div>
         </div>
