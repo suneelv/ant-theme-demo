@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, ColorPicker, Flex, Modal, Tag, Typography } from 'antd';
-import type { ColorSchema } from '../theme/theme.types';
-import { DEFAULT_TENANT_COLORS } from '../theme/tenantDefaults';
+import type { ColorSchema } from './theme.types';
+import { DEFAULT_TENANT_COLORS } from './tenantDefaults';
 
 const { Text, Paragraph } = Typography;
 
@@ -45,12 +45,7 @@ export const TenantThemeDialog = ({ colors, onCancel, onSave }: Props) => {
                 <Paragraph type="secondary" style={{ marginBottom: 0 }}>
                     Specify theme colors for tenant
                 </Paragraph>
-                <Button
-                    size="small"
-                    color="danger"
-                    variant="outlined"
-                    onClick={() => setDraft(DEFAULT_TENANT_COLORS)}
-                >
+                <Button size="small" color="danger" variant="outlined" onClick={() => setDraft(DEFAULT_TENANT_COLORS)}>
                     Reset to default
                 </Button>
             </Flex>

@@ -1,10 +1,7 @@
-import { useState } from 'react';
-import { Button, Divider, Flex, Segmented, Switch, Typography } from 'antd';
-import { DesktopOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { Divider, Flex, Typography } from 'antd';
+import { ThemeControls } from '../theme/ThemeControls';
 import { useResolvedColorMode } from '../theme/useResolvedColorMode';
-import { useThemeSettings } from '../theme/useThemeSettings';
 import { ColorMode } from '../theme/theme.types';
-import { TenantThemeDialog } from './TenantThemeDialog';
 import { CoverageProvider } from './Specimen';
 import { DeltaTable } from './DeltaTable';
 import { useDemoStyles } from './useDemoStyles';
@@ -20,38 +17,16 @@ const { Title, Text, Paragraph } = Typography;
 
 const TOOLBAR_GAP = 12;
 
-const COLOR_MODE_OPTIONS = [
-    { value: ColorMode.Light, label: 'Light', icon: <SunOutlined /> },
-    { value: ColorMode.Dark, label: 'Dark', icon: <MoonOutlined /> },
-    { value: ColorMode.System, label: 'System', icon: <DesktopOutlined /> },
-];
-
 export const ThemeDemo = () => {
     const { styles } = useDemoStyles();
-    const { colorMode, setColorMode, useTenant, setUseTenant, tenantColors, setTenantColors } = useThemeSettings();
     const resolvedColorMode = useResolvedColorMode();
-    const [configureOpen, setConfigureOpen] = useState(false);
 
     return (
         <CoverageProvider>
             <div className={styles.scroller}>
                 <div className={styles.toolbar}>
                     <Flex align="center" gap={TOOLBAR_GAP} wrap>
-                        <Segmented<ColorMode>
-                            size="small"
-                            options={COLOR_MODE_OPTIONS}
-                            value={colorMode}
-                            onChange={setColorMode}
-                        />
-
-                        <Divider orientation="vertical" />
-
-                        <Switch checked={useTenant} aria-label="Use tenant theme" onChange={setUseTenant} />
-                        <Text strong>Use tenant theme</Text>
-                        <Button size="small" disabled={!useTenant} onClick={() => setConfigureOpen(true)}>
-                            Configure
-                        </Button>
-                        <Text type="secondary">(builds the theme from a ColorSchema)</Text>
+                        <ThemeControls />
 
                         <Divider orientation="vertical" />
 
@@ -84,17 +59,6 @@ export const ThemeDemo = () => {
                     <Feedback />
                     <TextAccessibility />
                 </div>
-
-                {configureOpen ? (
-                    <TenantThemeDialog
-                        colors={tenantColors}
-                        onCancel={() => setConfigureOpen(false)}
-                        onSave={(next) => {
-                            setTenantColors(next);
-                            setConfigureOpen(false);
-                        }}
-                    />
-                ) : null}
             </div>
         </CoverageProvider>
     );

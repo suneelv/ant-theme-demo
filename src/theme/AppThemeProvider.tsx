@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { ConfigProvider, theme } from 'antd';
+import { App, ConfigProvider, theme } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { buildAppTheme } from './theme';
 import { ColorMode } from './theme.types';
@@ -44,7 +44,9 @@ export const AppThemeProvider = ({ children }: Props) => {
             spin={{ indicator: <LoadingOutlined spin /> }}
         >
             <DocumentSurface />
-            {children}
+            {/* antd's App context, so message, notification and Modal.confirm are reachable from a
+                hook rather than the static methods, which cannot see this theme. */}
+            <App style={{ height: '100%' }}>{children}</App>
         </ConfigProvider>
     );
 };

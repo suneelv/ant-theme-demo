@@ -6,6 +6,7 @@ const { Header, Content } = Layout;
 
 const NAV_ITEMS = [
     { key: Path.Home, label: <NavLink to={Path.Home}>Home</NavLink> },
+    { key: Path.Diff, label: <NavLink to={Path.Diff}>Diff</NavLink> },
     { key: Path.Experiments, label: <NavLink to={Path.Experiments}>Experiments</NavLink> },
 ];
 
